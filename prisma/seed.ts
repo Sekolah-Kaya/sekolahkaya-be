@@ -1,5 +1,5 @@
 // seed.ts
-import { prisma } from '../src/config/prisma';
+import { prisma } from '../src/infrastructure/database/prisma'
 
 async function main() {
   console.log('🌱 Starting seed...');
@@ -210,18 +210,18 @@ async function main() {
   console.log('📊 Creating lesson progress...');
   for (const enrollment of enrollments) {
     const enrollmentLessons = lessons.filter(l => l.courseId === enrollment.courseId);
-    
+
     for (const lesson of enrollmentLessons) {
-      const status = Math.random() > 0.7 ? 'COMPLETED' : 
-                    Math.random() > 0.5 ? 'IN_PROGRESS' : 'NOT_STARTED';
-      
+      const status = Math.random() > 0.7 ? 'COMPLETED' :
+        Math.random() > 0.5 ? 'IN_PROGRESS' : 'NOT_STARTED';
+
       await prisma.lessonProgress.create({
         data: {
           enrollmentId: enrollment.id,
           lessonId: lesson.id,
           status: status,
-          watchDurationSeconds: status === 'COMPLETED' ? lesson.durationMinutes * 60 : 
-                              status === 'IN_PROGRESS' ? Math.floor(lesson.durationMinutes * 30) : 0,
+          watchDurationSeconds: status === 'COMPLETED' ? lesson.durationMinutes * 60 :
+            status === 'IN_PROGRESS' ? Math.floor(lesson.durationMinutes * 30) : 0,
           startedAt: status !== 'NOT_STARTED' ? new Date() : null,
           completedAt: status === 'COMPLETED' ? new Date() : null,
         },

@@ -32,9 +32,12 @@ export class CategoryRepository implements ICategoryRepository {
     async create(data: Category): Promise<Category> {
         const categoryData = await this.prisma.category.create({
             data: {
+                id: data.id,
                 name: data.name,
                 description: data.description,
                 slug: data.slug,
+                createdAt: data.createdAt,
+                updatedAt: data.updatedAt
             }
         })
 

@@ -1,63 +1,42 @@
 import { PrismaClient } from "@prisma/client";
 import { IReviewRepository } from "../../../domain/review/IReviewRepository";
 import { Review } from "../../../domain/review/Review";
-import { CreateReviewCommand, UpdateReviewCommand } from "../../../domain/review/ReviewDTO";
 
 export class ReviewRepository implements IReviewRepository {
     public constructor(readonly prisma: PrismaClient) { }
 
-    async create(data: CreateReviewCommand): Promise<boolean> {
-        try {
-            const review = Review.create({
-                userId: data.userId,
-                courseId: data.courseId,
-                rating: data.rating,
-                comment: data.comment
-            });
-
-            await this.prisma.review.create({
+    async create(data: Review): Promise<Review> {
+            const reviewData = await this.prisma.review.create({
                 data: {
-                    id: review.id,
-                    userId: review.userId,
-                    courseId: review.courseId,
-                    rating: review.rating,
-                    comment: review.comment,
-                    createdAt: review.createdAt,
-                    updatedAt: review.updatedAt
+                    id: data.id,
+                    userId: data.userId,
+                    courseId: data.courseId,
+                    rating: data.rating,
+                    comment: data.comment,
+                    createdAt: data.createdAt,
+                    updatedAt: data.updatedAt
                 }
             });
 
-            return true;
-        } catch {
-            return false;
-        }
+            return this.toDomain(reviewData);
     }
 
-    async update(id: string, data: UpdateReviewCommand): Promise<boolean> {
-        try {
+    async update(id: string, data: Review): Promise<Review | null> {        
             const review = await this.findById(id);
             if (!review || !review.canEdit(data.userId)) {
-                return false;
+                return null;
             }
 
-            review.update({
-                rating: data.rating,
-                comment: data.comment
-            });
-
-            await this.prisma.review.update({
+            const reviewData = await this.prisma.review.update({
                 where: { id },
                 data: {
-                    rating: review.rating,
-                    comment: review.comment,
+                    rating: data.rating,
+                    comment: data.comment,
                     updatedAt: new Date()
                 }
             });
 
-            return true;
-        } catch {
-            return false;
-        }
+            return this.toDomain(reviewData);
     }
 
     async delete(id: string): Promise<boolean> {
@@ -71,7 +50,7 @@ export class ReviewRepository implements IReviewRepository {
         }
     }
 
-    async findAll(courseId: string, filter: any): Promise<Review[]> {
+    async findAllWithFilter(courseId: string, filter?: any): Promise<Review[]> {
         const where: any = { courseId };
 
         if (filter?.rating) {
@@ -86,12 +65,18 @@ export class ReviewRepository implements IReviewRepository {
         return reviews.map(review => this.toDomain(review));
     }
 
-    private async findById(id: string): Promise<Review | null> {
+    async findById(id: string): Promise<Review | null> {
         const data = await this.prisma.review.findUnique({
             where: { id }
         });
 
         return data ? this.toDomain(data) : null;
+    }
+
+    async findAll(): Promise<Review[]> {
+        const reviews = await this.prisma.review.findMany()
+
+        return reviews.map(review => this.toDomain(review))
     }
 
     private toDomain(reviewData: any): Review {

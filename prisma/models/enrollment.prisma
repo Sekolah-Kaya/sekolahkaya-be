@@ -1,0 +1,25 @@
+model Enrollment {
+  id                 String            @id @default(cuid())
+  userId             String            @map("user_id")
+  courseId           String            @map("course_id")
+  amountPaid         Decimal           @db.Decimal(10, 2) @map("amount_paid")
+  status             EnrollmentStatus  @default(ACTIVE)
+  enrolledAt         DateTime          @default(now()) @map("enrolled_at")
+  completedAt        DateTime?         @map("completed_at")
+  progressPercentage Int               @default(0) @map("progress_percentage")
+
+  // Relations
+  user             User             @relation(fields: [userId], references: [id])
+  course           Course           @relation(fields: [courseId], references: [id])
+  payment          Payment?
+  lessonProgresses LessonProgress[]
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}

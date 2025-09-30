@@ -1,0 +1,13 @@
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  slug        String   @unique
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  courses Course[]
+
+  @@map("categories")
+}

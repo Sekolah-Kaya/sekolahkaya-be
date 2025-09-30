@@ -1,0 +1,30 @@
+model Payment {
+  id                String            @id @default(cuid())
+  enrollmentId      String            @unique @map("enrollment_id")
+  grossAmount       Decimal           @db.Decimal(10, 2) @map("gross_amount")
+  orderId           String            @unique @map("order_id")
+  transactionId     String?           @map("transaction_id")
+  transactionStatus TransactionStatus @default(PENDING) @map("transaction_status")
+  paymentType       String?           @map("payment_type")
+  fraudStatus       String?           @map("fraud_status")
+  midtransResponse  Json?             @map("midtrans_response")
+  snapToken         String?           @map("snap_token")
+  transactionTime   DateTime?         @map("transaction_time")
+  settlementTime    DateTime?         @map("settlement_time")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
+
+  @@map("payments")
+}
+
+enum TransactionStatus {
+  PENDING
+  SETTLEMENT
+  CANCEL
+  DENY
+  EXPIRE
+  FAILURE
+}

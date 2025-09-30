@@ -1,0 +1,19 @@
+model Lesson {
+  id              String   @id @default(cuid())
+  courseId        String   @map("course_id")
+  title           String
+  description     String?
+  videoUrl        String?  @map("video_url")
+  content         String?
+  orderNumber     Int      @map("order_number")
+  durationMinutes Int      @map("duration_minutes")
+  isPreview       Boolean  @default(false) @map("is_preview")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  course           Course            @relation(fields: [courseId], references: [id])
+  lessonProgresses LessonProgress[]
+
+  @@map("lessons")
+}

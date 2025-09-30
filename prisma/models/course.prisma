@@ -1,0 +1,35 @@
+model Course {
+  id            String        @id @default(cuid())
+  instructorId  String        @map("instructor_id")
+  categoryId    String        @map("category_id")
+  title         String
+  description   String?
+  price         Decimal       @db.Decimal(10, 2)
+  thumbnail     String?
+  status        CourseStatus  @default(DRAFT)
+  durationHours Int           @map("duration_hours")
+  level         CourseLevel   @default(BEGINNER)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  instructor  User         @relation("Instructor", fields: [instructorId], references: [id])
+  category    Category     @relation(fields: [categoryId], references: [id])
+  lessons     Lesson[]
+  enrollments Enrollment[]
+  reviews     Review[]
+
+  @@map("courses")
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}

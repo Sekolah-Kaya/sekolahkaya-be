@@ -1,0 +1,22 @@
+model LessonProgress {
+  id                   String         @id @default(cuid())
+  enrollmentId         String         @map("enrollment_id")
+  lessonId             String         @map("lesson_id")
+  status               ProgressStatus @default(NOT_STARTED)
+  watchDurationSeconds Int            @default(0) @map("watch_duration_seconds")
+  startedAt            DateTime?      @map("started_at")
+  completedAt          DateTime?      @map("completed_at")
+
+  // Relations
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
+  lesson     Lesson     @relation(fields: [lessonId], references: [id])
+
+  @@unique([enrollmentId, lessonId])
+  @@map("lesson_progress")
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}

@@ -3,11 +3,11 @@ import { PrismaClient } from "@prisma/client"
 import { User } from "../../../domain/user/User"
 
 export class UserRepository implements IUserRepository {
-    constructor(readonly prisma: PrismaClient) {}
+    constructor(readonly prisma: PrismaClient) { }
 
     async findById(id: string): Promise<User | null> {
         const userData = await this.prisma.user.findUnique({
-            where: {id}
+            where: { id }
         })
 
         return userData ? this.toDomain(userData) : null
@@ -15,7 +15,7 @@ export class UserRepository implements IUserRepository {
 
     async findByEmail(email: string): Promise<User | null> {
         const userData = await this.prisma.user.findUnique({
-            where: {email}
+            where: { email }
         })
 
         return userData ? this.toDomain(userData) : null
@@ -23,7 +23,7 @@ export class UserRepository implements IUserRepository {
 
     async findAll(): Promise<User[]> {
         const users = await this.prisma.user.findMany({
-            orderBy: {createdAt: 'desc'}
+            orderBy: { createdAt: 'desc' }
         })
 
         return users.map(user => this.toDomain(user))
@@ -31,7 +31,7 @@ export class UserRepository implements IUserRepository {
 
     async create(user: User): Promise<User> {
         const userData = await this.prisma.user.create({
-            data : {
+            data: {
                 id: user.id,
                 email: user.email.getValue(),
                 passwordHash: user.passwordHash,
@@ -50,26 +50,22 @@ export class UserRepository implements IUserRepository {
     }
 
     async update(id: string, data: Partial<User>): Promise<User | null> {
-        try {
-            const userData = await this.prisma.user.update({
-                where: { id },
-                data: {
-                    email: data.email?.getValue(),
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    phone: data.phone,
-                    role: data.role,
-                    profilePicture: data.profilePicture,
-                    isActive: data.isActive,
-                    passwordHash: data.passwordHash,
-                    updatedAt: new Date()
-                }
-            })
+        const updateData: any = {}
 
-            return this.toDomain(userData)
-        } catch {
-            return null
-        }
+        if (data.email) updateData.email = data.email.getValue();
+        if (data.firstName !== undefined) updateData.firstName = data.firstName;
+        if (data.lastName !== undefined) updateData.lastName = data.lastName;
+        if (data.phone !== undefined) updateData.phone = data.phone;
+        if (data.profilePicture !== undefined) updateData.profilePicture = data.profilePicture;
+        if (data.isActive !== undefined) updateData.isActive = data.isActive;
+        if (data.passwordHash !== undefined) updateData.passwordHash = data.passwordHash;
+
+        const userData = await this.prisma.user.update({
+            where: { id },
+            data: updateData
+        })
+
+        return this.toDomain(userData)
     }
 
     async delete(id: string): Promise<boolean> {

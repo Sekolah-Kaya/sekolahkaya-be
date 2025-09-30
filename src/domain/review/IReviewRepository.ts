@@ -1,9 +1,9 @@
 import { Review } from "./Review";
-import { CreateReviewDTO, ReviewFilter, UpdateReviewDTO } from "./ReviewDTO";
+import { CreateReviewCommand, UpdateReviewCommand } from "./ReviewDTO";
 
 export interface IReviewRepository {
-    create(data: CreateReviewDTO): Promise<boolean>
+    create(data: CreateReviewCommand): Promise<boolean>
     delete(id: string): Promise<boolean>
-    update(id: string, data: UpdateReviewDTO): Promise<boolean>
-    findAll(courseId: string, filter: ReviewFilter): Promise<Review[]>
+    update(id: string, data: UpdateReviewCommand): Promise<boolean>
+    findAll(courseId: string, filter: any): Promise<Review[]>
 }

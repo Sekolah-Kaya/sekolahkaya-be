@@ -8,7 +8,7 @@ import { IEventDispatcher } from "./EventDispatcher";
 import { IPasswordService } from "./PasswordService";
 
 export class UserApplicationService implements IUserApplicationService {
-    private constructor(
+    public constructor(
         private readonly userRepository: IUserRepository,
         private readonly passwordService: IPasswordService,
         private readonly emailService: IEmailService,

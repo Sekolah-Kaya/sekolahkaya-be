@@ -1,18 +1,19 @@
 import { Router } from "express";
 import { DIContainer } from "../infrastructure/DependencyInjectionContainer";
 import { CourseController } from "../infrastructure/controller/CourseController";
-import { authenticateToken } from "../middleware/authenticateToken";
+import { AuthenticationMiddleware } from "../middleware/Authentication";
 
 export function createCourseRoutes(container: DIContainer): Router {
     const router = Router()
     const courseController = new CourseController(container.get('ICourseApplicationService'))
+    const authMiddleware = container.get<AuthenticationMiddleware>('AuthenticationMiddleware')
 
-    router.post('/', authenticateToken, (req, res) => courseController.createCourse(req, res))
-    router.put('/:id', authenticateToken, (req, res) => courseController.updateCourse(req, res))
-    router.post('/:id/publish', authenticateToken, (req, res) => courseController.publishCourse(req, res))
-    router.post('/:id/archive', authenticateToken, (req, res) => courseController.archiveCourse(req, res));
+    router.post('/', authMiddleware.authenticate(), (req, res) => courseController.createCourse(req, res))
+    router.put('/:id', authMiddleware.authenticate(), (req, res) => courseController.updateCourse(req, res))
+    router.post('/:id/publish', authMiddleware.authenticate(), (req, res) => courseController.publishCourse(req, res))
+    router.post('/:id/archive', authMiddleware.authenticate(), (req, res) => courseController.archiveCourse(req, res));
     router.get('/search', (req, res) => courseController.searchCourses(req, res));
-    router.get('/my-courses', authenticateToken, (req, res) => courseController.getInstructorCourses(req, res));
+    router.get('/my-courses', authMiddleware.authenticate(), (req, res) => courseController.getInstructorCourses(req, res));
     router.get('/:id', (req, res) => courseController.getCourse(req, res));
 
     return router;

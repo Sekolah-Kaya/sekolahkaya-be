@@ -8,7 +8,8 @@ declare global {
                 email: string,
                 role: Role,
                 firstName: string,
-                lastName: string
+                lastName: string,
+                jti?: string
             }
         }
     }

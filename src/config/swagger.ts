@@ -6,7 +6,8 @@ const swaggerOptions: swaggerJSDoc.Options = {
         openapi: '3.0.0',
         info: {
             title: "Sekolah Kaya API",
-            description: "API documentation for Sekolah Kaya"
+            description: "API documentation for Sekolah Kaya",
+            version: '1',
         },
         servers: [
             {

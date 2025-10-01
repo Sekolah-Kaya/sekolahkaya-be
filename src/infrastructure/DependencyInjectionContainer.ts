@@ -58,11 +58,11 @@ export class DIContainer {
             password: env.REDIS_PASSWORD
         }), true)
 
-        container.register('IUserRepository', () => 
+        container.register('IUserRepository', () =>
             new UserRepository(container.get('PrismaClient')), true)
-        container.register('ICourseRepository', () => 
+        container.register('ICourseRepository', () =>
             new CourseRepository(container.get('PrismaClient')), true)
-        container.register('IEnrollmentRepository', () => 
+        container.register('IEnrollmentRepository', () =>
             new EnrollmentRepository(container.get('PrismaClient')), true)
         container.register('ILessonRepository', () =>
             new LessonRepository(container.get('PrismaClient')), true)
@@ -80,7 +80,7 @@ export class DIContainer {
         container.register('IPasswordService', () => new BcryptPasswordService(), true)
         container.register('ICacheService', () => new RedisCache(container.get('Redis')), true)
         container.register('IEventDispatcher', () => new SimpleEventDispatcher(), true)
-        container.register('IEmailService', () => 
+        container.register('IEmailService', () =>
             new NodeMailerEmailService({
                 host: env.SMTP_HOST!,
                 port: parseInt(env.SMTP_PORT!),
@@ -93,25 +93,25 @@ export class DIContainer {
             }), true)
 
         container.register('ICourseApplicationService', () =>
-        new CourseApplicationService(
-            container.get('IUserRepository'),
-            container.get('IPasswordService'),
-            container.get('IEmailService'),
-            container.get('IEventDispatcher'),
-            container.get('ICacheService')
-        ), true)
+            new CourseApplicationService(
+                container.get('IUserRepository'),
+                container.get('IPasswordService'),
+                container.get('IEmailService'),
+                container.get('IEventDispatcher'),
+                container.get('ICacheService')
+            ), true)
 
         container.register('IEnrollmentApplicationService', () =>
-        new EnrollmentApplicationService(
-            container.get('IEnrollmentRepository'),
-            container.get('ICourseRepository'),
-            container.get('IUserRepository'),
-            container.get('ILessonRepository'),
-            container.get('ILessonProgressRepository'),
-            container.get('IPaymentService'),
-            container.get('IEventDispatcher'),
-            container.get('IEmailService'),
-        ), true)
+            new EnrollmentApplicationService(
+                container.get('IEnrollmentRepository'),
+                container.get('ICourseRepository'),
+                container.get('IUserRepository'),
+                container.get('ILessonRepository'),
+                container.get('ILessonProgressRepository'),
+                container.get('IPaymentService'),
+                container.get('IEventDispatcher'),
+                container.get('IEmailService'),
+            ), true)
 
         return container
     }

@@ -1,3 +1,4 @@
+import { Request, Response } from 'express'
 import { EnrollmentApplicationService } from "../../application/EnrollmentApplicationService";
 import { Enrollment } from "../../domain/enrollment/Enrollment";
 import { EnrollCourseCommand } from "../../domain/enrollment/EnrollmentDTO";

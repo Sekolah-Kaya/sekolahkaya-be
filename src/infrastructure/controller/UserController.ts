@@ -1,3 +1,4 @@
+import { Request, Response } from 'express'
 import { UserApplicationService } from "../../application/UserApplicationService";
 import { Role } from "../../domain/common/enum";
 import { ChangePasswordCommand, RegisterUserCommand, UpdateUserProfileCommand } from "../../domain/user/UserDTO";

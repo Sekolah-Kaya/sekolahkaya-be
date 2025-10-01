@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { CourseApplicationService } from "../../application/CourseApplicationService";
 import { CourseLevel, Role } from "../../domain/common/enum";
 import { Course } from "../../domain/course/Course";
@@ -83,7 +84,7 @@ export class CourseController extends BaseController {
         }
     }
 
-    async updateCourse(res: Response, req: Request): Promise<void> {
+    async updateCourse(req: Request, res: Response): Promise<void> {
         try {
             const courseId = req.params.id
             const instructorId = this.getUserId(req)
@@ -102,7 +103,7 @@ export class CourseController extends BaseController {
                 }
             ];
 
-            const validationErrors = await RequestValidator.validate(req.body, validationRules)
+            const validationErrors = RequestValidator.validate(req.body, validationRules)
             if (Object.keys(validationErrors).length > 0) {
                 this.sendValidationError(res, validationErrors)
                 return
@@ -192,7 +193,7 @@ export class CourseController extends BaseController {
                 }
                 this.sendSuccess(res, formattedResult)
             } else {
-                this.sendError
+                this.sendError(res, result.error!)
             }
         } catch (error) {
             this.sendError(res, 'Course search failed', 500)

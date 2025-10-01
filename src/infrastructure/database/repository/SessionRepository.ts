@@ -21,6 +21,14 @@ export class SessionRepository implements ISessionRepository {
         return data ? this.toDomain(data) : null
     }
 
+    async findByUserId(userId: string): Promise<Session[]> {
+        const sessions = await this.prisma.session.findMany({
+            where: {userId}
+        })
+
+        return sessions.map(session => this.toDomain(session))
+    }
+
     async findAll(): Promise<Session[]> {
         const sessions = await this.prisma.session.findMany({
             orderBy: { createdAt: 'desc' }
@@ -98,6 +106,18 @@ export class SessionRepository implements ISessionRepository {
         } catch {
             return false
         }
+    }
+
+    async deleteExpiredSessions(): Promise<number> {
+        const result = await this.prisma.session.deleteMany({
+            where: {
+                expiresAt: {
+                    lt: new Date()
+                }
+            }
+        })
+
+        return result.count        
     }
 
     private toDomain(sessionData: any): Session {

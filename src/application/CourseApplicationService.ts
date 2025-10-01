@@ -9,7 +9,7 @@ import { ICacheService } from "./CacheService";
 import { IEventDispatcher } from "./EventDispatcher";
 
 export class CourseApplicationService implements ICourseApplicationService {
-    private constructor(
+    public constructor(
         private readonly courseRepository: ICourseRepository,
         private readonly userRepository: IUserRepository,
         private readonly categoryRepository: ICategoryRepository,

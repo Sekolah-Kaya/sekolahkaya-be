@@ -16,7 +16,7 @@ import { IEventDispatcher } from "./EventDispatcher";
 import { IPaymentService } from "./PaymentService";
 
 export class EnrollmentApplicationService implements IEnrollmentApplicationService {
-    private constructor(
+    public constructor(
         private readonly enrollmentRepository: IEnrollmentRepository,
         private readonly courseRepository: ICourseRepository,
         private readonly userRepository: IUserRepository,

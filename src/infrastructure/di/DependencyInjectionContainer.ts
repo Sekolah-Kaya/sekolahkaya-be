@@ -14,8 +14,10 @@ import { BcryptPasswordService } from "../external-services/BcryptPasswordServic
 import { RedisCache } from "../external-services/RedisCacheService"
 import { SimpleEventDispatcher } from "../external-services/SimpleEventDispatcher"
 import { NodeMailerEmailService } from "../external-services/NodeMailerEmailService"
+import { UserApplicationService } from "../../application/services/UserApplicationService"
 import { CourseApplicationService } from "../../application/services/CourseApplicationService"
 import { EnrollmentApplicationService } from "../../application/services/EnrollmentApplicationService"
+import { MidtransService } from "../external-services/MidtransService"
 
 export class DIContainer {
     private services: Map<string, any> = new Map()
@@ -42,22 +44,24 @@ export class DIContainer {
 
         const factory = this.services.get(key)
         if (!factory) {
-            throw new Error('`Service ${key} not registered')
+            throw new Error(`Service ${key} not registered`) // FIXED: template literal
         }
 
         return factory()
     }
 
     static bootstrap(): DIContainer {
-        const container = new DIContainer
+        const container = new DIContainer()
 
-        container.register('PrismaClient', () => new PrismaClient, true)
+        // Infrastructure
+        container.register('PrismaClient', () => new PrismaClient(), true)
         container.register('Redis', () => new Redis({
             host: env.REDIS_HOST || 'localhost',
             port: parseInt(env.REDIS_PORT || '6379'),
             password: env.REDIS_PASSWORD
         }), true)
 
+        // Repositories
         container.register('IUserRepository', () =>
             new UserRepository(container.get('PrismaClient')), true)
         container.register('ICourseRepository', () =>
@@ -73,33 +77,57 @@ export class DIContainer {
         container.register('IPaymentRepository', () =>
             new PaymentRepository(container.get('PrismaClient')), true)
         container.register('IReviewRepository', () =>
-            new ReviewRepository(container.get('PrisamClient')), true)
+            new ReviewRepository(container.get('PrismaClient')), true) // FIXED: typo PrisamClient
         container.register('ISessionRepository', () =>
             new SessionRepository(container.get('PrismaClient')), true)
 
+        // External Services
         container.register('IPasswordService', () => new BcryptPasswordService(), true)
-        container.register('ICacheService', () => new RedisCache(container.get('Redis')), true)
+        container.register('ICacheService', () => 
+            new RedisCache(container.get('Redis')), true)
         container.register('IEventDispatcher', () => new SimpleEventDispatcher(), true)
         container.register('IEmailService', () =>
             new NodeMailerEmailService({
                 host: env.SMTP_HOST!,
                 port: parseInt(env.SMTP_PORT!),
-                secure: false,
+                secure: env.SMTP_SECURE === 'true',
                 auth: {
                     user: env.SMTP_USER!,
                     pass: env.SMTP_PASS!
                 },
                 from: env.SMTP_FROM_ADDRESS!
             }), true)
+        
+        // Payment Service - ADDED
+        container.register('IPaymentService', () =>
+            new MidtransService(
+                {
+                    serverKey: env.MIDTRANS_SERVER_KEY!,
+                    clientKey: env.MIDTRANS_CLIENT_KEY!,
+                    isProduction: env.MIDTRANS_IS_PRODUCTION === 'true',
+                    snapUrl: env.MIDTRANS_SNAP_URL!,
+                    apiUrl: env.MIDTRANS_API_URL!
+                },
+                container.get('IPaymentRepository')
+            ), true)
 
-        container.register('ICourseApplicationService', () =>
-            new CourseApplicationService(
+        // Application Services
+        container.register('IUserApplicationService', () =>
+            new UserApplicationService(
                 container.get('IUserRepository'),
                 container.get('IPasswordService'),
                 container.get('IEmailService'),
+                container.get('IEventDispatcher')
+            ), true)
+
+        container.register('ICourseApplicationService', () =>
+            new CourseApplicationService(
+                container.get('ICourseRepository'),
+                container.get('IUserRepository'),
+                container.get('ICategoryRepository'),
                 container.get('IEventDispatcher'),
                 container.get('ICacheService')
-            ), true)
+            ), true) // FIXED: dependencies
 
         container.register('IEnrollmentApplicationService', () =>
             new EnrollmentApplicationService(
@@ -110,7 +138,7 @@ export class DIContainer {
                 container.get('ILessonProgressRepository'),
                 container.get('IPaymentService'),
                 container.get('IEventDispatcher'),
-                container.get('IEmailService'),
+                container.get('IEmailService')
             ), true)
 
         return container

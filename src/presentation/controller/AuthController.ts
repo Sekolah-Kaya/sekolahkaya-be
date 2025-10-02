@@ -1,10 +1,10 @@
 import { Request, Response } from "express"
+import { BaseController } from "./BaseController"
+import { RequestValidator, ValidationRule } from "../middleware/ValidationRule"
+import { Role } from "../../shared/types/Enum"
 import { IAuthService, LoginCommand } from "../../application/services/AuthenticationService"
 import { IUserApplicationService } from "../../application/services/UserApplicationService"
-import { BaseController } from "../../presentation/controller/BaseController"
-import { RequestValidator, ValidationRule } from "../../presentation/middleware/ValidationRule"
 import { RegisterUserCommand } from "../../application/commands/user/RegisterUserCommand"
-import { Role } from "../../shared/types/Enum"
 
 export class AuthController extends BaseController {
     public constructor(

@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client'
-import { createApp, loadConfig } from './config/app'
-import { ExtendedDIContainer } from './infrastructure/ExtendedDIContainer'
+import { createApp, loadConfig } from './app'
+import { ExtendedDIContainer } from './infrastructure/di/ExtendedDIContainer'
 import Redis from 'ioredis'
-import { ISessionService } from './application/SessionService'
+import { ISessionService } from './application/services/SessionService'
 
 export async function startServer(): Promise<void> {
     try {

@@ -1,14 +1,14 @@
 import { Request, Response } from 'express'
-import { BaseController } from '../../presentation/controller/BaseController'
-import { UserApplicationService } from '../../application/services/UserApplicationService'
-import { RequestValidator, ValidationRule } from '../../presentation/middleware/ValidationRule'
-import { Role } from '../../shared/types/Enum'
-import { RegisterUserCommand } from '../../application/commands/user/RegisterUserCommand'
-import { UpdateUserProfileCommand } from '../../application/commands/user/UpdateUserProfileCommand'
-import { ChangePasswordCommand } from '../../application/commands/user/ChangePasswordCommand'
+import { Role } from "../../shared/types/Enum";
+import { RequestValidator, ValidationRule } from "../middleware/ValidationRule";
+import { BaseController } from "./BaseController";
+import { IUserApplicationService } from '../../application/services/UserApplicationService';
+import { RegisterUserCommand } from '../../application/commands/user/RegisterUserCommand';
+import { UpdateUserProfileCommand } from '../../application/commands/user/UpdateUserProfileCommand';
+import { ChangePasswordCommand } from '../../application/commands/user/ChangePasswordCommand';
 
 export class UserController extends BaseController {
-    public constructor(readonly userService: UserApplicationService) {
+    public constructor(readonly userService: IUserApplicationService) {
         super()
     }
 

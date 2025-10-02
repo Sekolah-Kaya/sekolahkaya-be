@@ -1,14 +1,13 @@
 import { Request, Response } from 'express';
-import { BaseController } from '../../presentation/controller/BaseController';
+import { CourseLevel, Role } from "../../shared/types/Enum";
+import { Course } from "../../domain/models/Course";
+import { RequestValidator, ValidationRule } from "../middleware/ValidationRule";
+import { BaseController } from "./BaseController";
 import { CourseApplicationService } from '../../application/services/CourseApplicationService';
-import { CourseLevel, Role } from '../../shared/types/Enum';
-import { RequestValidator, ValidationRule } from '../../presentation/middleware/ValidationRule';
 import { CreateCourseCommand } from '../../application/commands/course/CreateCourseCommand';
 import { UpdateCourseCommand } from '../../application/commands/course/UpdateCourseCommand';
 import { PublishCourseCommand } from '../../application/commands/course/PublishCourseCommand';
 import { CourseQuery } from '../../application/queries/CourseQuery';
-import { Course } from '../../domain/models/Course';
-
 
 export class CourseController extends BaseController {
     public constructor(readonly courseService: CourseApplicationService) {

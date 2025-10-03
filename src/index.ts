@@ -16,18 +16,18 @@ export async function startServer(): Promise<void> {
 
         const server = app.listen(config.port, () => {
             console.log(`
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║   🚀 LMS Platform API Server                             ║
-║                                                           ║
-║   Environment: ${config.nodeEnv.padEnd(44)}║
-║   Port:        ${config.port.toString().padEnd(44)}║
-║   Status:      RUNNING                                   ║
-║                                                           ║
-║   Health:      http://localhost:${config.port}/health${' '.repeat(18)}║
-║   API Docs:    http://localhost:${config.port}/api-docs${' '.repeat(15)}║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║   🚀 LMS Platform API Server                                            ║
+║                                                                         ║
+║   Environment: ${config.nodeEnv.padEnd(44)}             ║
+║   Port:        ${config.port.toString().padEnd(44)}             ║
+║   Status:      RUNNING                                                  ║
+║                                                                         ║
+║   Health:      http://localhost:${config.port}/health${' '.repeat(18)}           ║
+║   API Docs:    http://localhost:${config.port}/api-docs${' '.repeat(15)}            ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
             `)
         })
 

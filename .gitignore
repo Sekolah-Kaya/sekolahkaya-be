@@ -3,3 +3,4 @@ node_modules
 /generated/prisma
 package-lock.json
 dist
+client_secret.json

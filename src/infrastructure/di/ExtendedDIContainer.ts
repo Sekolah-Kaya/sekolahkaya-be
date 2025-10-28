@@ -23,6 +23,10 @@ import { UserApplicationService } from "../../application/services/UserApplicati
 import { CourseApplicationService } from "../../application/services/CourseApplicationService"
 import { EnrollmentApplicationService } from "../../application/services/EnrollmentApplicationService"
 import { MidtransService } from "../external-services/MidtransService"
+import { YoutubeService } from "../../application/services/YoutubeService"
+import { InMemoryYoutubeCache } from "../youtube/InMemoryYoutubeCache"
+import { RedisYoutubeCache } from "../youtube/RedisYoutubeCache"
+import { GoogleYoutubeApiClient } from "../youtube/GoogleYoutubeApiClient"
 
 export class ExtendedDIContainer extends DIContainer {
     static bootstrap(): ExtendedDIContainer {
@@ -82,7 +86,7 @@ export class ExtendedDIContainer extends DIContainer {
                 from: env.SMTP_FROM_ADDRESS || 'noreply@lms.com'
             }), true)
 
-        // Payment Service - ADDED
+        // Payment Service
         container.register('IPaymentService', () =>
             new MidtransService(
                 {
@@ -94,6 +98,40 @@ export class ExtendedDIContainer extends DIContainer {
                 },
                 container.get('IPaymentRepository')
             ), true)
+
+        container.register('IYoutubeApiClient', () => {
+            if (!env.YOUTUBE_API_KEY) {
+                console.warn('⚠️  YOUTUBE_API_KEY not configured - YouTube features will be disabled')
+                // Return null or throw based on your preference
+                return null as any
+            }
+            console.log('✅ YouTube API Client initialized')
+            return new GoogleYoutubeApiClient(env.YOUTUBE_API_KEY)
+        }, true)
+
+        // YouTube Cache (with Redis fallback to in-memory)
+        container.register('IYouTubeCache', () => {
+            try {
+                const redis = container.get<Redis>('Redis')
+                if (redis && redis.status === 'ready') {
+                    console.log('✅ Using Redis cache for YouTube data')
+                    return new RedisYoutubeCache(redis)
+                }
+            } catch (error) {
+                console.warn('⚠️  Redis not available, falling back to in-memory cache')
+            }
+
+            console.log('ℹ️  Using in-memory cache for YouTube data')
+            return new InMemoryYoutubeCache()
+        }, true)
+
+        // YouTube Service
+        container.register('IYouTubeService', () => {
+            new YoutubeService(
+                container.get('IYoutubeApiClient'),
+                container.get('IYouTubeCache')
+            )
+        }, true)
 
         // JWT & Auth Services
         container.register('JWTService', () =>

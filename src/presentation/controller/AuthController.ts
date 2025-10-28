@@ -148,6 +148,7 @@ export class AuthController extends BaseController {
                 this.sendError(res, result.error!, 401)
             }
         } catch (error) {
+            console.error(error)
             this.sendError(res, 'Token refresh failed', 500)
         }
     }

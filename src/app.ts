@@ -6,11 +6,12 @@ import rateLimit from 'express-rate-limit'
 import swaggerUi from 'swagger-ui-express'
 import { env } from './infrastructure/config/env'
 import swaggerSpec from './infrastructure/config/swagger'
-import { ExtendedDIContainer } from './infrastructure/di/ExtendedDIContainer'
+import { DIContainer } from './infrastructure/di/DependencyInjectionContainer'
 import { createAuthRoutes } from './presentation/routes/AuthRoutes'
 import { createUserRoutes } from './presentation/routes/UserRoutes'
 import { createCourseRoutes } from './presentation/routes/CourseRoutes'
 import { createEnrollmentRoutes } from './presentation/routes/EnrollmentRoutes'
+import { createYoutubeRoutes } from './presentation/routes/YoutubeRoutes'
 
 export class AppError extends Error {
     public constructor(
@@ -101,7 +102,7 @@ export function loadConfig(): AppConfig {
     }
 }
 
-export function createApp(container: ExtendedDIContainer, config: AppConfig): any {
+export function createApp(container: DIContainer, config: AppConfig): any {
     const app = express()
 
     app.use(helmet())
@@ -143,6 +144,7 @@ export function createApp(container: ExtendedDIContainer, config: AppConfig): an
     app.use('/api/users', createUserRoutes(container));
     app.use('/api/courses', createCourseRoutes(container));
     app.use('/api/enrollments', createEnrollmentRoutes(container));
+    app.use('/api/youtube', createYoutubeRoutes(container))
 
     app.use(notFoundHandler);
 

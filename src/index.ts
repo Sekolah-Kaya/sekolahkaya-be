@@ -1,13 +1,13 @@
 import { PrismaClient } from '@prisma/client'
 import { createApp, loadConfig } from './app'
-import { ExtendedDIContainer } from './infrastructure/di/ExtendedDIContainer'
+import { DIContainer } from './infrastructure/di/DependencyInjectionContainer'
 import Redis from 'ioredis'
 import { ISessionService } from './application/services/SessionService'
 
 export async function startServer(): Promise<void> {
     try {
         const config = loadConfig()
-        const container = ExtendedDIContainer.bootstrap()
+        const container = DIContainer.bootstrap()
         const prisma = container.get<PrismaClient>('PrismaClient')
         await prisma.$connect()
         console.log('✅ Database connected')

@@ -194,7 +194,7 @@ export class AuthService implements IAuthService {
 
     async validateToken(accessToken: string): Promise<ApplicationResult<JWTPayload>> {
         try {
-            const payload = await this.jwtService.verifyAccessToken(accessToken)
+            const payload = this.jwtService.verifyAccessToken(accessToken)
             if (!payload) {
                 return {
                     success: false,

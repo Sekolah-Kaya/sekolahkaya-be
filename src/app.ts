@@ -5,7 +5,7 @@ import morgan from 'morgan'
 import rateLimit from 'express-rate-limit'
 import swaggerUi from 'swagger-ui-express'
 import { env } from './infrastructure/config/env'
-import swaggerSpec from './infrastructure/config/swagger'
+import { swaggerSpec } from './infrastructure/config/swagger'
 import { DIContainer } from './infrastructure/di/DependencyInjectionContainer'
 import { createAuthRoutes } from './presentation/routes/AuthRoutes'
 import { createUserRoutes } from './presentation/routes/UserRoutes'
@@ -124,6 +124,24 @@ export function createApp(container: DIContainer, config: AppConfig): any {
 
     app.use(express.json({ limit: '10mb' }))
     app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+        explorer: true,
+        customCss: '.swagger-ui .topbar { display: none }',
+        customSiteTitle: 'LMS API Documentation',
+        swaggerOptions: {
+            persistAuthorization: true,
+            displayRequestDuration: true,
+            filter: true,
+            tryItOutEnabled: true
+        }
+    }))
+
+    app.get('/api-docs.json', (req, res) => {
+        res.setHeader('Content-Type', 'application/json')
+        res.send(swaggerSpec)
+    })
+
 
     if (config.nodeEnv === 'development') {
         app.use(morgan('dev'))
